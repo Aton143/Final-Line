@@ -47,7 +47,9 @@ i32 main(i32 ArgCount, i8 **Args) {
   i32 InputChar = 0;
 
   i8 TextBufferInformation[100] = {0};
-
+  Font Font = LoadFont("/Users/antoniomartinez/Desktop/Project/TextEditor/Assets/SourceCodePro-Regular.ttf");
+  SetTextureFilter(Font.texture, TEXTURE_FILTER_BILINEAR);
+  
   while(!WindowShouldClose()) {
     BeginDrawing();
     ClearBackground(RAYWHITE);
@@ -78,16 +80,23 @@ i32 main(i32 ArgCount, i8 **Args) {
     }
 
     i8 *TextToDraw = PrintBuffer(TextBuffer);
-    DrawText(TextToDraw, 190, 200, 20, BLACK);
+    DrawTextEx(Font, TextToDraw, (Vector2) { (float) 190, (float) 200 }, 20, 0, BLACK);
+    Color FadedViolet = Fade(VIOLET, 0.5f);
+    DrawRectangle(190, 200, 10, 20, FadedViolet);
+
+    Vector2 TextMeasure = MeasureTextEx(Font, TextToDraw, 20, 0);
+    printf("width: %f - height: %f\n", TextMeasure.x, TextMeasure.y);
+    
     free(TextToDraw);
 
     snprintf(TextBufferInformation, 100, "Left Index: %d", TextBuffer->LeftIndex);
-    DrawText(TextBufferInformation, 190, 250, 20, BLACK);
+    Vector2 TextPosition = { (float) 190, (float) 250  };
+    DrawTextEx(Font, TextBufferInformation, TextPosition, 20, 0, BLACK);
 
     snprintf(TextBufferInformation, 100, "Right Index: %d", TextBuffer->RightIndex);
     DrawText(TextBufferInformation, 190, 300, 20, BLACK);
 
-    PrintLines(Lines);
+    //PrintLines(Lines);
     
     //GetInput();
     
