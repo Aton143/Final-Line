@@ -37,6 +37,7 @@ i32 main(i32 ArgCount, i8 **Args) {
   LineBuffer *Lines = (LineBuffer *) calloc(1, sizeof(LineBuffer));
   Buffer **LinesForLineBuffer = (Buffer **) calloc(10, sizeof(Buffer **));
   Lines->Lines = LinesForLineBuffer;
+  Lines->LineIndex = 0;
   Lines->LeftIndex = 2;
   Lines->RightIndex = 9;
   Lines->Lines[0] = TextBuffer1;
@@ -44,7 +45,6 @@ i32 main(i32 ArgCount, i8 **Args) {
   Lines->Size = 10;
   
   i32 InputChar = 0;
-  i32 TextBufferIndex = 0;
 
   i8 TextBufferInformation[100] = {0};
 
@@ -54,7 +54,7 @@ i32 main(i32 ArgCount, i8 **Args) {
 
     InputChar = GetKeyPressed();
 
-    Buffer *TextBuffer = Lines->Lines[TextBufferIndex];
+    Buffer *TextBuffer = Lines->Lines[Lines->LineIndex];
     
     if ((InputChar >= 39 && InputChar <= 96) || (InputChar == KEY_SPACE)) {
       Insert(TextBuffer, InputChar);
@@ -69,12 +69,12 @@ i32 main(i32 ArgCount, i8 **Args) {
       MoveCursor(Lines, InputChar);
     }
     
-    if ((InputChar == KEY_UP) && TextBufferIndex == 1) {
-      TextBufferIndex--;
+    if ((InputChar == KEY_UP) && Lines->LineIndex == 1) {
+      MoveCursor(Lines, InputChar);
     }
 
-    if ((InputChar == KEY_DOWN) && TextBufferIndex == 0) {
-      TextBufferIndex++;
+    if ((InputChar == KEY_DOWN) && Lines->LineIndex == 0) {
+      MoveCursor(Lines, InputChar);
     }
 
     i8 *TextToDraw = PrintBuffer(TextBuffer);

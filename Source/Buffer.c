@@ -16,7 +16,6 @@ void Insert(Buffer *TextBuffer, i8 CharToAdd) {
 }
 
 void MoveCursorLR(Buffer *TextBuffer, i32 Delta) {
-  ASSERT(Delta != 0);
   i32 LeftIndex = TextBuffer->LeftIndex;
   i32 RightIndex = TextBuffer->RightIndex;
 
@@ -61,20 +60,6 @@ void MoveCursor(LineBuffer *Lines, i32 Direction) {
     RightLineIndex--;
 
     LineIndex--;
-
-    // Buffer Indices
-    Buffer *OldBuffer = CurrentBuffer;
-    i32 OldLeftBufferIndex = LeftBufferIndex;
-    i32 OldRightBufferIndex = RightBufferIndex;
-
-    Buffer *NewBuffer = Lines->Lines[LineIndex];
-    i32 NewLeftBufferIndex = NewBuffer->LeftIndex;
-    i32 NewRightBufferIndex = NewBuffer->RightIndex;
-    i32 DistanceBetweenIndices = NewRightBufferIndex - NewLeftBufferIndex;
-    
-    NewLeftBufferIndex = OldLeftBufferIndex;
-    NewRightBufferIndex = NewLeftBufferIndex + DistanceBetweenIndices;
-    
   }
 
   if (Direction == KEY_DOWN && RANGE_EXCL(RightLineIndex, 0, Size)) {
@@ -85,6 +70,17 @@ void MoveCursor(LineBuffer *Lines, i32 Direction) {
 
     LineIndex++;
   }
+
+  
+  // Buffer Indices
+  i32 OldLeftBufferIndex = LeftBufferIndex;
+
+  Buffer *NewBuffer = Lines->Lines[LineIndex];
+
+  i32 NewLeftBufferIndex = NewBuffer->LeftIndex;
+  i32 DistanceBetweenIndices = OldLeftBufferIndex - NewLeftBufferIndex;
+    
+  MoveCursorLR(NewBuffer, DistanceBetweenIndices);
 
   Lines->LeftIndex = LeftLineIndex;
   Lines->RightIndex = RightLineIndex;
@@ -98,18 +94,6 @@ void MoveCursor(LineBuffer *Lines, i32 Direction) {
     MoveCursorLR(CurrentBuffer, 1);
   }
 }
-
-/*void MoveCursor(Buffer *TextBuffer, i32 Direction) {
-  
-  
-
-  
-  if (TextBuffer->LeftIndex > TextBuffer->RightIndex) {
-    return;
-  }
-  
-  
-  }*/
 
 i8 *PrintBuffer(Buffer *TextBuffer) {
   i8 *ToPrint = calloc(16, sizeof(i8));
