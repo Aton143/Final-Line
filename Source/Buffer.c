@@ -53,7 +53,7 @@ void MoveCursor(LineBuffer *Lines, i32 Direction) {
   i32 LeftBufferIndex = CurrentBuffer->LeftIndex;
   i32 RightBufferIndex = CurrentBuffer->RightIndex;
     
-  if (Direction == KEY_UP && RANGE_EXCL(LeftLineIndex, 0, Size)) {
+  if (Direction == KEY_UP && RANGE_EXCL(LeftLineIndex, 0, Size + 1)) {
     Lines->Lines[RightLineIndex] = Lines->Lines[LeftLineIndex - 1];
     Lines->Lines[LeftLineIndex - 1] = NULL;
     LeftLineIndex--;
@@ -62,7 +62,7 @@ void MoveCursor(LineBuffer *Lines, i32 Direction) {
     LineIndex--;
   }
 
-  if (Direction == KEY_DOWN && RANGE_EXCL(RightLineIndex, 0, Size)) {
+  if (Direction == KEY_DOWN && RANGE_EXCL(RightLineIndex, -1, Size)) {
     Lines->Lines[LeftLineIndex] = Lines->Lines[RightLineIndex + 1];
     Lines->Lines[RightLineIndex + 1] = NULL;
     LeftLineIndex++;
@@ -88,9 +88,9 @@ void MoveCursor(LineBuffer *Lines, i32 Direction) {
 
   if (LeftBufferIndex > RightBufferIndex) return;
 
-  if ((Direction == KEY_LEFT) && RANGE_EXCL(LeftBufferIndex, 0, 14)) {
+  if ((Direction == KEY_LEFT) && RANGE_EXCL(LeftBufferIndex, 0, 15)) {
     MoveCursorLR(CurrentBuffer, -1);
-  } else if ((Direction == KEY_RIGHT) && RANGE_EXCL(RightBufferIndex, 0, 14)) {
+  } else if ((Direction == KEY_RIGHT) && RANGE_EXCL(RightBufferIndex, -1, 13)) {
     MoveCursorLR(CurrentBuffer, 1);
   }
 }
@@ -131,7 +131,6 @@ void RemoveLine(LineBuffer *Lines) {
     Lines->LeftIndex = LeftIndex;
   }  
 }
-
 
 void PrintLines(LineBuffer *Lines) {
   i32 LeftCounter = 0;
