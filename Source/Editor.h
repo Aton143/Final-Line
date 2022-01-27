@@ -7,13 +7,20 @@
 #include "raylib.h"
 
 #define ASSERT(Expression) if (!(Expression)) {* (volatile int *) 0 = 0;}
+#define BUFFER_LEN 128 // Default 128
+#define DEFAULT_LINE_BUFFER_SIZE 4096
+
 
 typedef enum Modifiers {
-  SHIFT =        1,
+  SHIFT   =      1,
   CONTROL =      1 << 1,
-  ALT =          1 << 2,
-  SUPER =        1 << 3
+  ALT     =      1 << 2,
+  SUPER   =      1 << 3
 } Modifiers;
+
+typedef enum BufferReturn {
+  TOO_MANY_LINES,
+} BufferError;
 
 typedef char     i8;
 typedef int16_t  i16;
@@ -32,33 +39,38 @@ typedef i32      b32;
 typedef float    r32;
 typedef double   r64;
 
-typedef enum BufferReturn {
-  TOO_MANY_LINES,
-} BufferError;
-
 typedef struct TextWindow {
-  i32            Width;
-  i32            Height;
+  u32            Width;
+  u32            Height;
 } TextWindow;
 
 typedef struct Buffer {
-  i8             Text[128];
-  i32            LeftIndex;
-  i32            RightIndex;
+  i8             Text[BUFFER_LEN];
+  
+  u32            LeftIndex;
+  u32            RightIndex;
 } Buffer;
 
 typedef struct LineBuffer {
   Buffer       **Lines;
-  i32            Size;
-  i32            LeftIndex;
-  i32            RightIndex;
-  i32            LineIndex;
+  u32            Size;       // in bytes
+  
+  u32            LeftIndex;
+  u32            RightIndex;
+  u32            LineIndex;
+  
   Font           Font;
-  i32            FontWidth;
-  i32            FontHeight;
+  u32            FontWidth;
+  u32            FontHeight;
 } LineBuffer;
 
+typedef struct FileData {
+  u8            *Data;
+  u32            Size;
+} FileData;
 
+#include "Memory.h"
+#include "File.h"
 #include "Buffer.h"
 #include "Render.h"
 #endif /* EDITOR_HEADER */

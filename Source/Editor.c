@@ -33,11 +33,10 @@ i32 main(i32 ArgCount, i8 **Args) {
   InitWindow(ScreenWidth, ScreenHeight, "raylib [core] example - basic window");
   SetTargetFPS(10);
 
-  Buffer *TextBuffer1 = (Buffer *) calloc(1, sizeof(Buffer));
-  Buffer *TextBuffer2 = (Buffer *) calloc(1, sizeof(Buffer));
+  /*
+  Buffer *TextBuffer1 = CreateBuffer();
+  Buffer *TextBuffer2 = CreateBuffer();
   
-  TextBuffer1->RightIndex = 14;
-  TextBuffer2->RightIndex = 14;
 
   LineBuffer *Lines = (LineBuffer *) calloc(1, sizeof(LineBuffer));
   Buffer **LinesForLineBuffer = (Buffer **) calloc(10, sizeof(Buffer **));
@@ -48,6 +47,7 @@ i32 main(i32 ArgCount, i8 **Args) {
   Lines->Lines[0] = TextBuffer1;
   Lines->Lines[1] = TextBuffer2;
   Lines->Size = 10;
+  */
   
   i32 InputChar = 0;
 
@@ -55,21 +55,28 @@ i32 main(i32 ArgCount, i8 **Args) {
   Font Font = LoadFont("/Users/antoniomartinez/Desktop/Project/TextEditor/Assets/SourceCodePro-Regular.ttf");
   SetTextureFilter(Font.texture, TEXTURE_FILTER_BILINEAR);
 
+  LineBuffer *Lines = CreateLineBuffer(Font, 20, 0);
+  
+  
   InitAudioDevice();
 
   while(!IsAudioDeviceReady()) {;}
 
-  // Wave GSound = LoadWave("/Users/antoniomartinez/Desktop/Project/TextEditor/Assets/Guile.wav");
-  // Sound Song = LoadSoundFromWave(GSound);
-  // PlaySound(Song);
+  /*
+  Wave GSound = LoadWave("/Users/antoniomartinez/Desktop/Project/TextEditor/Assets/Guile.wav");
+  Sound Song = LoadSoundFromWave(GSound);
+  PlaySound(Song);
+  */
 
   
-  Vector2 TextMeasure = MeasureTextEx(Font, "A", 20, 0);
-  printf("width: %f - height: %f\n", TextMeasure.x, TextMeasure.y);
-  Lines->FontWidth = (i32) TextMeasure.x;
-  Lines->FontHeight = (i32) TextMeasure.y;
-  Lines->Font = Font;
-  printf("FontHeight: %d\n FontWidth: %d\n", Lines->FontHeight, Lines->FontWidth);
+  // Vector2 TextMeasure = MeasureTextEx(Font, "A", 20, 0);
+  // printf("width: %f - height: %f\n", TextMeasure.x, TextMeasure.y);
+  // Lines->FontWidth = (i32) TextMeasure.x;
+  // Lines->FontHeight = (i32) TextMeasure.y;
+  // Lines->Font = Font;
+  // printf("FontHeight: %d\n FontWidth: %d\n", Lines->FontHeight, Lines->FontWidth);
+  
+  LoadFileIntoLineBuffer(Lines, (u8 *) "/Users/antoniomartinez/Desktop/Project/TextEditor/Source/File.c");
   
   while(!WindowShouldClose()) {
     BeginDrawing();
@@ -77,14 +84,15 @@ i32 main(i32 ArgCount, i8 **Args) {
 
     InputChar = GetKeyPressed();
 
-    Buffer *TextBuffer = Lines->Lines[Lines->LineIndex];
+
+    /*Buffer *TextBuffer = Lines->Lines[Lines->LineIndex];
     
     if ((InputChar >= 39 && InputChar <= 96) || (InputChar == KEY_SPACE)) {
       Insert(TextBuffer, InputChar);
     }
 
     if (InputChar == KEY_BACKSPACE) {
-      Backspace(TextBuffer);
+      Backspace(Lines);
     }
 
     
@@ -100,22 +108,24 @@ i32 main(i32 ArgCount, i8 **Args) {
       MoveCursor(Lines, InputChar);
     }
 
-    /*
-    i8 *TextToDraw = PrintBuffer(TextBuffer);
-    DrawTextEx(Font, TextToDraw, (Vector2) { (float) 0, (float) -2 }, 20, 0, BLACK);
-    Color FadedViolet = Fade(VIOLET, 0.5f);
-    DrawRectangle(190, 200, 10, 20, FadedViolet);
-    */
-
-    DrawAllLines(Window, Lines);
     
+    // i8 *TextToDraw = PrintBuffer(TextBuffer);
+    // DrawTextEx(Font, TextToDraw, (Vector2) { (float) 0, (float) -2 }, 20, 0, BLACK);
+    // Color FadedViolet = Fade(VIOLET, 0.5f);
+    // DrawRectangle(190, 200, 10, 20, FadedViolet);
+    
+    */
+    DrawAllLines(Window, Lines);
+
+    /*
     snprintf(TextBufferInformation, 100, "Left Index: %d", TextBuffer->LeftIndex);
     Vector2 TextPosition = { (float) 190, (float) 250  };
     DrawTextEx(Font, TextBufferInformation, TextPosition, 20, 0, BLACK);
 
     snprintf(TextBufferInformation, 100, "Right Index: %d", TextBuffer->RightIndex);
     DrawText(TextBufferInformation, 190, 300, 20, BLACK);
-
+    */
+    
     //PrintLines(Lines);
     
     //GetInput();
