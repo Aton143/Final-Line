@@ -9,6 +9,7 @@ LineBuffer *CreateLineBuffer(Font Font, u32 FontSize, u32 Size);
 void Backspace(LineBuffer *Lines);
 void Insert(Buffer *Buffer, i8 CharToAdd);
 void MoveCursor(LineBuffer *Lines, i32 Direction);
+void MoveCursorToMouse(LineBuffer *Lines);
 i8  *PrintBuffer(Buffer *TextBuffer);
 void InsertLine(LineBuffer *Lines, Buffer *BufferToAdd);
 void RemoveLine(LineBuffer *Lines);

@@ -31,7 +31,7 @@ i32 main(i32 ArgCount, i8 **Args) {
   Window.Height = ScreenHeight;
 
   InitWindow(ScreenWidth, ScreenHeight, "raylib [core] example - basic window");
-  SetTargetFPS(10);
+  SetTargetFPS(120);
 
   /*
   Buffer *TextBuffer1 = CreateBuffer();
@@ -76,7 +76,8 @@ i32 main(i32 ArgCount, i8 **Args) {
   // Lines->Font = Font;
   // printf("FontHeight: %d\n FontWidth: %d\n", Lines->FontHeight, Lines->FontWidth);
   
-  LoadFileIntoLineBuffer(Lines, (u8 *) "/Users/antoniomartinez/Desktop/Project/TextEditor/Source/File.c");
+  LoadFileIntoLineBuffer(Lines, (u8 *) "/Users/antoniomartinez/Desktop/Project/TextEditor/Source/build.sh");
+  PrintLines(Lines);
   
   while(!WindowShouldClose()) {
     BeginDrawing();
@@ -85,7 +86,7 @@ i32 main(i32 ArgCount, i8 **Args) {
     InputChar = GetKeyPressed();
 
 
-    /*Buffer *TextBuffer = Lines->Lines[Lines->LineIndex];
+    Buffer *TextBuffer = Lines->Lines[Lines->LineIndex];
     
     if ((InputChar >= 39 && InputChar <= 96) || (InputChar == KEY_SPACE)) {
       Insert(TextBuffer, InputChar);
@@ -95,20 +96,26 @@ i32 main(i32 ArgCount, i8 **Args) {
       Backspace(Lines);
     }
 
-    
+
+    printf("Line Index: %d -- LineLeftIndex: %d -- LineRightIndex: %d\n", Lines->LineIndex, Lines->LeftIndex, Lines->RightIndex);
     if ((InputChar == KEY_RIGHT) || (InputChar == KEY_LEFT)) {
       MoveCursor(Lines, InputChar);
     }
     
-    if ((InputChar == KEY_UP) && Lines->LineIndex == 1) {
+    if (InputChar == KEY_UP)/* && Lines->LineIndex == 1*/ {
       MoveCursor(Lines, InputChar);
     }
 
-    if ((InputChar == KEY_DOWN) && Lines->LineIndex == 0) {
+    if (InputChar == KEY_DOWN)/* && Lines->LineIndex == 0*/ {
       MoveCursor(Lines, InputChar);
     }
 
-    
+    if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+      printf("(%d,%d)\n", GetMouseX(), GetMouseY());
+      MoveCursorToMouse(Lines);
+    }
+
+    /*
     // i8 *TextToDraw = PrintBuffer(TextBuffer);
     // DrawTextEx(Font, TextToDraw, (Vector2) { (float) 0, (float) -2 }, 20, 0, BLACK);
     // Color FadedViolet = Fade(VIOLET, 0.5f);
@@ -116,17 +123,15 @@ i32 main(i32 ArgCount, i8 **Args) {
     
     */
     DrawAllLines(Window, Lines);
-
-    /*
+    DrawCursor(Window, Lines);
+    
     snprintf(TextBufferInformation, 100, "Left Index: %d", TextBuffer->LeftIndex);
     Vector2 TextPosition = { (float) 190, (float) 250  };
     DrawTextEx(Font, TextBufferInformation, TextPosition, 20, 0, BLACK);
 
     snprintf(TextBufferInformation, 100, "Right Index: %d", TextBuffer->RightIndex);
     DrawText(TextBufferInformation, 190, 300, 20, BLACK);
-    */
     
-    //PrintLines(Lines);
     
     //GetInput();
     

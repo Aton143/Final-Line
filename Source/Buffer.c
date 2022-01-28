@@ -57,6 +57,22 @@ void MoveCursorLR(Buffer *Buffer, i32 Delta) {
   Buffer->RightIndex = RightIndex;
 }
 
+u32 NumberCharacters(Buffer *Buffer) {
+  u32 LeftIndex = Buffer->LeftIndex;
+  u32 RightIndex = Buffer->RightIndex;
+  u32 LastIndex = BUFFER_LEN - 1;
+
+  return (LeftIndex - 1) + (LastIndex - RightIndex);
+}
+
+u32 NumberLines(LineBuffer *Lines) {
+  u32 LeftIndex = Lines->LeftIndex;
+  u32 RightIndex = Lines->RightIndex;
+  u32 LastIndex = Lines->Size - 1;
+  
+  return (LeftIndex - 1) + (LastIndex - RightIndex);
+}
+
 void MoveCursor(LineBuffer *Lines, i32 Direction) {
   i32 LineIndex = Lines->LineIndex;
   i32 LeftLineIndex = Lines->LeftIndex;
@@ -106,6 +122,59 @@ void MoveCursor(LineBuffer *Lines, i32 Direction) {
     MoveCursorLR(CurrentBuffer, -1);
   } else if ((Direction == KEY_RIGHT) && RANGE_EXCL(RightBufferIndex, -1, BUFFER_LEN - 1)) {
     MoveCursorLR(CurrentBuffer, 1);
+  }
+}
+
+void MoveCursorToMouse(LineBuffer *Lines) {
+  r32 MouseY = (r32) GetMouseY();
+  r32 FontHeight = Lines->FontHeight;
+  
+  u32 LineIndex = (u32) (MouseY / FontHeight);
+  u32 CurrentLineIndex = Lines->LineIndex;
+  i32 LineIndexDelta = LineIndex - CurrentLineIndex;
+
+  if (LineIndexDelta < 0) {
+    for (u32 MoveCounter = 0;
+	 MoveCounter < -LineIndexDelta;
+	 MoveCounter++) {
+      MoveCursor(Lines, KEY_UP);
+    }
+  } else {
+    for (u32 MoveCounter = 0;
+	 MoveCounter < LineIndexDelta;
+	 MoveCounter++) {
+      MoveCursor(Lines, KEY_DOWN);
+    }
+  }
+
+  r32 MouseX = (r32) GetMouseX();
+  r32 FontWidth = Lines->FontWidth;
+
+  u32 NewLineIndex = Lines->LineIndex;
+  Buffer *Buffer = Lines->Lines[NewLineIndex];
+  
+  u32 MaybeBufferIndex = (u32) (MouseX / FontWidth);
+  u32 CurrentBufferIndex = Buffer->LeftIndex;
+  u32 NumberOfCharacters = NumberCharacters(Buffer);
+
+  if (MaybeBufferIndex >= NumberOfCharacters) {
+    MaybeBufferIndex = NumberOfCharacters;
+  }
+
+  i32 BufferIndexDelta = MaybeBufferIndex - CurrentBufferIndex;
+
+  if (BufferIndexDelta < 0) {
+    for (u32 MoveCounter = 0;
+	 MoveCounter < -BufferIndexDelta;
+	 MoveCounter++) {
+      MoveCursor(Lines, KEY_LEFT);
+    }
+  } else {
+    for (u32 MoveCounter = 0;
+	 MoveCounter < BufferIndexDelta;
+	 MoveCounter++) {
+      MoveCursor(Lines, KEY_RIGHT);
+    }
   }
 }
 
@@ -163,7 +232,7 @@ void PrintLines(LineBuffer *Lines) {
       LineToPrint = NULL;
     }
   }
-
+  
   for (; RightCounter < RightStoppingPoint; RightCounter++) {
     Buffer *GetBuffer = Lines->Lines[RightCounter];
     if (GetBuffer) {
@@ -181,15 +250,16 @@ LineBuffer *CreateLineBuffer(Font Font, u32 FontSize, u32 Size) {
   if (!Size) Size = DEFAULT_LINE_BUFFER_SIZE;
   Buffer **Lines = (Buffer **) calloc(Size, sizeof(Buffer **));
   ReturnLines->Lines = Lines;
-  ReturnLines->Size = Size - 1;
+  ReturnLines->Size = Size;
   ReturnLines->LineIndex = 0;
   ReturnLines->LeftIndex = 0;
+  ReturnLines->RightIndex = Size - 1;
 
   ReturnLines->Font = Font;
   Vector2 TextMeasure = MeasureTextEx(Font, "A", FontSize, 0);
   printf("width: %f - height: %f\n", TextMeasure.x, TextMeasure.y);
-  ReturnLines->FontWidth = (u32) TextMeasure.x;
-  ReturnLines->FontHeight = (u32) TextMeasure.y;
+  ReturnLines->FontWidth =  TextMeasure.x;
+  ReturnLines->FontHeight =  TextMeasure.y;
 
   return ReturnLines;
 }
@@ -232,13 +302,15 @@ void LoadFileIntoLineBuffer(LineBuffer *Lines, u8 *FileName) {
 	 BufferIndex < FileLineIndex;
 	 BufferIndex++) {
       Insert(CurrentBuffer, Data[FileIndex + BufferIndex]);
-      putchar(Data[FileIndex + BufferIndex]);
+      // putchar(Data[FileIndex + BufferIndex]);
     }
 
-    putchar('\n');
+    // putchar('\n');
     ++FileLineIndex;
     FileIndex += FileLineIndex;
     LineIndex++;
     Lines->LeftIndex++;
   }
+
+  Lines->LineIndex = LineIndex - 1;
 }

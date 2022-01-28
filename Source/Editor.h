@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/mman.h>
+#include <math.h>
 #include "raylib.h"
 
 #define ASSERT(Expression) if (!(Expression)) {* (volatile int *) 0 = 0;}
@@ -39,6 +40,9 @@ typedef i32      b32;
 typedef float    r32;
 typedef double   r64;
 
+typedef Vector2  Vec2;
+typedef Vector3  Vec3;
+
 typedef struct TextWindow {
   u32            Width;
   u32            Height;
@@ -60,8 +64,8 @@ typedef struct LineBuffer {
   u32            LineIndex;
   
   Font           Font;
-  u32            FontWidth;
-  u32            FontHeight;
+  r32            FontWidth;
+  r32            FontHeight;
 } LineBuffer;
 
 typedef struct FileData {
