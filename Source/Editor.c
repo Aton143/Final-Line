@@ -24,14 +24,14 @@ i8 ProcessInput() {
 i32 main(i32 ArgCount, i8 **Args) {
   TextWindow Window = {0};
   
-  i32 ScreenWidth = 800;
-  i32 ScreenHeight = 450;
+  i32 ScreenWidth = 1200;
+  i32 ScreenHeight = 900;
 
   Window.Width = ScreenWidth;
   Window.Height = ScreenHeight;
 
   InitWindow(ScreenWidth, ScreenHeight, "raylib [core] example - basic window");
-  SetTargetFPS(120);
+  SetTargetFPS(60);
 
   /*
   Buffer *TextBuffer1 = CreateBuffer();
@@ -76,10 +76,10 @@ i32 main(i32 ArgCount, i8 **Args) {
   // Lines->Font = Font;
   // printf("FontHeight: %d\n FontWidth: %d\n", Lines->FontHeight, Lines->FontWidth);
   
-  LoadFileIntoLineBuffer(Lines, (u8 *) "/Users/antoniomartinez/Desktop/Project/TextEditor/Source/build.sh");
+  FileData File = LoadFileIntoLineBuffer(Lines, (u8 *) "/Users/antoniomartinez/Desktop/Project/TextEditor/Source/ex");
   PrintLines(Lines);
   
-  while(!WindowShouldClose()) {
+  while (!WindowShouldClose()) {
     BeginDrawing();
     ClearBackground(RAYWHITE);
 
@@ -97,7 +97,7 @@ i32 main(i32 ArgCount, i8 **Args) {
     }
 
 
-    printf("Line Index: %d -- LineLeftIndex: %d -- LineRightIndex: %d\n", Lines->LineIndex, Lines->LeftIndex, Lines->RightIndex);
+    // printf("Line Index: %d -- LineLeftIndex: %d -- LineRightIndex: %d\n", Lines->LineIndex, Lines->LeftIndex, Lines->RightIndex);
     if ((InputChar == KEY_RIGHT) || (InputChar == KEY_LEFT)) {
       MoveCursor(Lines, InputChar);
     }
@@ -108,6 +108,10 @@ i32 main(i32 ArgCount, i8 **Args) {
 
     if (InputChar == KEY_DOWN)/* && Lines->LineIndex == 0*/ {
       MoveCursor(Lines, InputChar);
+    }
+
+    if (InputChar == KEY_TAB) {
+      SaveDataIntoFile(Lines, File);
     }
 
     if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {

@@ -14,6 +14,7 @@ i8  *PrintBuffer(Buffer *TextBuffer);
 void InsertLine(LineBuffer *Lines, Buffer *BufferToAdd);
 void RemoveLine(LineBuffer *Lines);
 void PrintLines(LineBuffer *Lines);
-void LoadFileIntoLineBuffer(LineBuffer *Lines, u8 *FileName);
+FileData LoadFileIntoLineBuffer(LineBuffer *Lines, u8 *FileName);
+u32 NumberCharacters(Buffer *Buffer);
 
 #endif

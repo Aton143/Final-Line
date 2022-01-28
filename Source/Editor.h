@@ -5,12 +5,14 @@
 #include <stdio.h>
 #include <sys/mman.h>
 #include <math.h>
+#include <unistd.h>
+#include <string.h>
 #include "raylib.h"
 
 #define ASSERT(Expression) if (!(Expression)) {* (volatile int *) 0 = 0;}
+#define DEFAULT_USLEEP_PERIOD 500
 #define BUFFER_LEN 128 // Default 128
 #define DEFAULT_LINE_BUFFER_SIZE 4096
-
 
 typedef enum Modifiers {
   SHIFT   =      1,
@@ -70,6 +72,7 @@ typedef struct LineBuffer {
 
 typedef struct FileData {
   u8            *Data;
+  u8            *Name;
   u32            Size;
 } FileData;
 

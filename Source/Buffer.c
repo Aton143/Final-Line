@@ -281,7 +281,7 @@ b32 IsNewLine(u8 CheckChar) {
   return (CheckChar == '\n') || (CheckChar == '\r');
 }
 
-void LoadFileIntoLineBuffer(LineBuffer *Lines, u8 *FileName) {
+FileData LoadFileIntoLineBuffer(LineBuffer *Lines, u8 *FileName) {
   FileData FileData = OpenFileToMemory(FileName);
 
   u8 *Data = FileData.Data;
@@ -313,4 +313,5 @@ void LoadFileIntoLineBuffer(LineBuffer *Lines, u8 *FileName) {
   }
 
   Lines->LineIndex = LineIndex - 1;
+  return FileData;
 }
