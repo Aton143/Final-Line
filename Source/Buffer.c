@@ -82,8 +82,8 @@ void MoveCursor(LineBuffer *Lines, i32 Direction) {
 
   i32 LeftBufferIndex = CurrentBuffer->LeftIndex;
   i32 RightBufferIndex = CurrentBuffer->RightIndex;
-    
-  if (Direction == KEY_UP && RANGE_EXCL(LeftLineIndex, 0, Size + 1)) {
+
+  if (Direction == KEY_UP && RANGE_EXCL(LineIndex, 0, Size + 1)) {
     Lines->Lines[RightLineIndex] = Lines->Lines[LeftLineIndex - 1];
     Lines->Lines[LeftLineIndex - 1] = NULL;
     LeftLineIndex--;
@@ -92,7 +92,8 @@ void MoveCursor(LineBuffer *Lines, i32 Direction) {
     LineIndex--;
   }
 
-  if (Direction == KEY_DOWN && RANGE_EXCL(RightLineIndex, -1, Size)) {
+  // This will have to be checked
+  if (Direction == KEY_DOWN && RANGE_EXCL(RightLineIndex, -1, Size - 1)) {
     Lines->Lines[LeftLineIndex] = Lines->Lines[RightLineIndex + 1];
     Lines->Lines[RightLineIndex + 1] = NULL;
     LeftLineIndex++;
@@ -192,14 +193,19 @@ i8 *PrintBuffer(Buffer *TextBuffer) {
 }
 
 void InsertLine(LineBuffer *Lines, Buffer *BufferToAdd) {
-  i32 LeftIndex = Lines->LeftIndex;
-  i32 RightIndex = Lines->RightIndex;
+  u32 LeftIndex = Lines->LeftIndex;
+  u32 RightIndex = Lines->RightIndex;
+  u32 LineIndex = Lines->LineIndex;
   
   if (!Lines->Lines[LeftIndex] &&
       (LeftIndex != RightIndex)) {
     Lines->Lines[LeftIndex] = BufferToAdd;
+
     LeftIndex++;
+    LineIndex++;
+    
     Lines->LeftIndex = LeftIndex;
+    Lines->LineIndex = LineIndex;
   }
 }
 
@@ -285,29 +291,32 @@ FileData LoadFileIntoLineBuffer(LineBuffer *Lines, u8 *FileName) {
   FileData FileData = OpenFileToMemory(FileName);
 
   u8 *Data = FileData.Data;
-
+  printf("%s\n", Data);
+  
   u32 FileIndex = 0;
   u32 FileSize = FileData.Size;
   u32 LineIndex = 0;
 
-  while (FileIndex < FileSize) {
-    //printf("Index: %d - FileSize: %d\n", FileIndex, FileSize);
-    u32 FileLineIndex = 0;
+  // should this be FileSize - 1?
+  while (FileIndex < FileSize - 1) {
+    printf("Index: %d - FileSize: %d\n", FileIndex, FileSize);
+    u32 HowManyToWriteThisLine = 0;
     
-    while (!IsNewLine(Data[FileIndex + FileLineIndex])) FileLineIndex++;
+    while (!IsNewLine(Data[FileIndex + HowManyToWriteThisLine])) HowManyToWriteThisLine++;
+    printf("To Write: %d\n", HowManyToWriteThisLine);
 
     Lines->Lines[LineIndex] = CreateBuffer();
     Buffer *CurrentBuffer = Lines->Lines[LineIndex];
     for (u32 BufferIndex = 0;
-	 BufferIndex < FileLineIndex;
+	 BufferIndex < HowManyToWriteThisLine;
 	 BufferIndex++) {
       Insert(CurrentBuffer, Data[FileIndex + BufferIndex]);
       // putchar(Data[FileIndex + BufferIndex]);
     }
 
     // putchar('\n');
-    ++FileLineIndex;
-    FileIndex += FileLineIndex;
+    HowManyToWriteThisLine++;
+    FileIndex += HowManyToWriteThisLine;
     LineIndex++;
     Lines->LeftIndex++;
   }

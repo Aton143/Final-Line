@@ -62,12 +62,13 @@ i32 main(i32 ArgCount, i8 **Args) {
 
   while(!IsAudioDeviceReady()) {;}
 
-  /*
+  
   Wave GSound = LoadWave("/Users/antoniomartinez/Desktop/Project/TextEditor/Assets/Guile.wav");
   Sound Song = LoadSoundFromWave(GSound);
   PlaySound(Song);
-  */
 
+  Wave Punch = LoadWave("/Users/antoniomartinez/Desktop/Project/TextEditor/Assets/Punch.wav");
+  Sound PunchSound = LoadSoundFromWave(Punch);
   
   // Vector2 TextMeasure = MeasureTextEx(Font, "A", 20, 0);
   // printf("width: %f - height: %f\n", TextMeasure.x, TextMeasure.y);
@@ -84,12 +85,14 @@ i32 main(i32 ArgCount, i8 **Args) {
     ClearBackground(RAYWHITE);
 
     InputChar = GetKeyPressed();
-
-
+    
     Buffer *TextBuffer = Lines->Lines[Lines->LineIndex];
     
     if ((InputChar >= 39 && InputChar <= 96) || (InputChar == KEY_SPACE)) {
       Insert(TextBuffer, InputChar);
+      if (!IsSoundPlaying(PunchSound)) {
+	PlaySound(PunchSound);
+      }
     }
 
     if (InputChar == KEY_BACKSPACE) {
@@ -114,6 +117,11 @@ i32 main(i32 ArgCount, i8 **Args) {
       SaveDataIntoFile(Lines, File);
     }
 
+    if (InputChar == KEY_ENTER) {
+      Buffer *NewBuffer = CreateBuffer();
+      InsertLine(Lines, NewBuffer);
+    }
+
     if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
       printf("(%d,%d)\n", GetMouseX(), GetMouseY());
       MoveCursorToMouse(Lines);
@@ -126,6 +134,7 @@ i32 main(i32 ArgCount, i8 **Args) {
     // DrawRectangle(190, 200, 10, 20, FadedViolet);
     
     */
+    
     DrawAllLines(Window, Lines);
     DrawCursor(Window, Lines);
     
