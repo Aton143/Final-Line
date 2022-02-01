@@ -1,26 +1,4 @@
 #include "Editor.h"
-
-i8 GetModifiers() {
-  i8 ReturnModifiers = 0;
-  if (IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT)) ReturnModifiers |= SHIFT;
-  if (IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) ReturnModifiers |= CONTROL;
-  if (IsKeyDown(KEY_LEFT_ALT) || IsKeyDown(KEY_RIGHT_ALT)) ReturnModifiers |= ALT;
-  if (IsKeyDown(KEY_LEFT_SUPER) || IsKeyDown(KEY_RIGHT_SUPER)) ReturnModifiers |= SUPER;
-
-  return ReturnModifiers;
-}
-
-i8 ProcessInput() {
-  i32 InputChar = 0;
-  i8 Modifiers = GetModifiers();
-  
-  do {
-    InputChar = GetCharPressed();
-  } while (InputChar);
-
-  return 0;
-}
-
 i32 main(i32 ArgCount, i8 **Args) {
   TextWindow Window = {0};
   
@@ -33,22 +11,6 @@ i32 main(i32 ArgCount, i8 **Args) {
   InitWindow(ScreenWidth, ScreenHeight, "raylib [core] example - basic window");
   SetTargetFPS(60);
 
-  /*
-  Buffer *TextBuffer1 = CreateBuffer();
-  Buffer *TextBuffer2 = CreateBuffer();
-  
-
-  LineBuffer *Lines = (LineBuffer *) calloc(1, sizeof(LineBuffer));
-  Buffer **LinesForLineBuffer = (Buffer **) calloc(10, sizeof(Buffer **));
-  Lines->Lines = LinesForLineBuffer;
-  Lines->LineIndex = 0;
-  Lines->LeftIndex = 2;
-  Lines->RightIndex = 9;
-  Lines->Lines[0] = TextBuffer1;
-  Lines->Lines[1] = TextBuffer2;
-  Lines->Size = 10;
-  */
-  
   i32 InputChar = 0;
 
   i8 TextBufferInformation[100] = {0};
@@ -57,25 +19,13 @@ i32 main(i32 ArgCount, i8 **Args) {
 
   LineBuffer *Lines = CreateLineBuffer(Font, 20, 0);
   
-  
   InitAudioDevice();
-
   while(!IsAudioDeviceReady()) {;}
-
-  
   Wave GSound = LoadWave("/Users/antoniomartinez/Desktop/Project/TextEditor/Assets/Guile.wav");
   Sound Song = LoadSoundFromWave(GSound);
   PlaySound(Song);
-
   Wave Punch = LoadWave("/Users/antoniomartinez/Desktop/Project/TextEditor/Assets/Punch.wav");
   Sound PunchSound = LoadSoundFromWave(Punch);
-  
-  // Vector2 TextMeasure = MeasureTextEx(Font, "A", 20, 0);
-  // printf("width: %f - height: %f\n", TextMeasure.x, TextMeasure.y);
-  // Lines->FontWidth = (i32) TextMeasure.x;
-  // Lines->FontHeight = (i32) TextMeasure.y;
-  // Lines->Font = Font;
-  // printf("FontHeight: %d\n FontWidth: %d\n", Lines->FontHeight, Lines->FontWidth);
   
   FileData File = LoadFileIntoLineBuffer(Lines, (u8 *) "/Users/antoniomartinez/Desktop/Project/TextEditor/Source/ex");
   PrintLines(Lines);
@@ -85,6 +35,7 @@ i32 main(i32 ArgCount, i8 **Args) {
     ClearBackground(RAYWHITE);
 
     InputChar = GetKeyPressed();
+    printf("%d\n", InputChar);
     
     Buffer *TextBuffer = Lines->Lines[Lines->LineIndex];
     

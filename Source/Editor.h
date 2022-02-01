@@ -13,6 +13,8 @@
 #define DEFAULT_USLEEP_PERIOD 500
 #define BUFFER_LEN 128 // Default 128
 #define DEFAULT_LINE_BUFFER_SIZE 4096
+#define MODIFIER_TYPE_COUNT 16
+#define NUM_OF_ALPHANUM_KEYS 64
 
 typedef enum Modifiers {
   SHIFT   =      1,
@@ -75,6 +77,15 @@ typedef struct FileData {
   u8            *Name;
   u32            Size;
 } FileData;
+
+typedef union Command {
+  u32            Output;
+  void         (*Function)(LineBuffer *);
+} Command;
+
+typedef struct {
+  Command CommandMatrix[MODIFIER_TYPE_COUNT][MODIFIER_TYPE_COUNT][NUM_OF_ALPHANUM_KEYS];
+} Commands;
 
 #include "Memory.h"
 #include "File.h"
