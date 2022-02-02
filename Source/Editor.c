@@ -31,18 +31,23 @@ i32 main(i32 ArgCount, i8 **Args) {
   PrintLines(Lines);
 
   FindShellCommand("build.sh");
+
+  CommandBuffer *Command = (CommandBuffer *) CreateBuffer();
   
   while (!WindowShouldClose()) {
     BeginDrawing();
     ClearBackground(RAYWHITE);
 
     InputChar = GetKeyPressed();
-    printf("%d\n", InputChar);
+    // printf("%d\n", InputChar);
     
     Buffer *TextBuffer = Lines->Lines[Lines->LineIndex];
     
     if ((InputChar >= 39 && InputChar <= 96) || (InputChar == KEY_SPACE)) {
-      Insert(TextBuffer, InputChar);
+      if (!IsKeyDown(KEY_LEFT_SHIFT) && !IsKeyDown(KEY_RIGHT_SHIFT))
+	Insert(TextBuffer, InputChar);
+      else
+	Insert(Command, InputChar);
       if (!IsSoundPlaying(PunchSound)) {
 	PlaySound(PunchSound);
       }
@@ -89,6 +94,15 @@ i32 main(i32 ArgCount, i8 **Args) {
     */
     
     DrawAllLines(Window, Lines);
+
+    i8 *TextToDraw = PrintBuffer(Command);
+    DrawTextEx(Lines->Font,
+	       TextToDraw,
+	       (Vector2) {(float) 0, (float) Window.Height - Lines->FontHeight},
+	       Lines->FontHeight,
+	       0,
+	       BLACK);
+       
     DrawCursor(Window, Lines);
     
     snprintf(TextBufferInformation, 100, "Left Index: %d", TextBuffer->LeftIndex);
