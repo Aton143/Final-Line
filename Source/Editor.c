@@ -29,6 +29,8 @@ i32 main(i32 ArgCount, i8 **Args) {
   
   FileData File = LoadFileIntoLineBuffer(Lines, (u8 *) "/Users/antoniomartinez/Desktop/Project/TextEditor/Source/ex");
   PrintLines(Lines);
+
+  FindShellCommand("build.sh");
   
   while (!WindowShouldClose()) {
     BeginDrawing();

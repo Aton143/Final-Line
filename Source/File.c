@@ -139,3 +139,89 @@ void SaveDataIntoFile(LineBuffer *Lines, FileData File) {
   SaveFileData((char *) File.Name, DataToSave.Data, DataToSave.Size);
   free(DataToSave.Data);
 }
+
+// b32 CommandFound(
+
+void FindShellCommand(i8 *CommandName) {
+  // want this to be system independent
+  i8 *PathEnv = getenv("PATH");
+  i32 PathEnvIndex = 0;
+  b32 Found = false;
+  
+  while (PathEnv[PathEnvIndex]) {
+    printf("Index: %d\n", PathEnvIndex);
+    i8 CharToEvaluate = PathEnv[PathEnvIndex];
+    
+    i8 FindName[128] = {0};
+    i32 NameIndex = 0;
+    
+    while(CharToEvaluate && (CharToEvaluate != ':')) {
+      FindName[NameIndex] = CharToEvaluate;
+      
+      PathEnvIndex++;
+      NameIndex++;
+      CharToEvaluate = PathEnv[PathEnvIndex];
+    }
+
+    FindName[NameIndex] = '/';
+    NameIndex++;
+    
+    for (i32 CommandIndex = 0;
+	 CommandName[CommandIndex];
+	 CommandIndex++) {
+      FindName[NameIndex] = CommandName[CommandIndex];
+      NameIndex++;
+    }
+
+    // found the file
+    if (FileExists(FindName)) {
+      Found = true;
+    }
+    
+    if (PathEnv[PathEnvIndex]) {
+      PathEnvIndex++;
+    }
+  }
+
+  i8 *PWD = (i8 *) GetWorkingDirectory();
+  i8 FindName[128] = {0};
+  i32 NameIndex = 0;
+  
+  for (;
+       PWD[NameIndex];
+       NameIndex++) {
+    FindName[NameIndex] = PWD[NameIndex];
+    }
+
+  FindName[NameIndex] = '/';
+  NameIndex++;
+  FindName[NameIndex] = 'S';
+  NameIndex++;
+  FindName[NameIndex] = 'o';
+  NameIndex++;
+  FindName[NameIndex] = 'u';
+  NameIndex++;
+  FindName[NameIndex] = 'r';
+  NameIndex++;
+  FindName[NameIndex] = 'c';
+  NameIndex++;
+  FindName[NameIndex] = 'e';
+  NameIndex++;
+  FindName[NameIndex] = '/';
+  NameIndex++;
+
+  for (i32 CommandIndex = 0;
+       CommandName[CommandIndex];
+       CommandIndex++) {
+    FindName[NameIndex] = CommandName[CommandIndex];
+    NameIndex++;
+  }
+
+  printf("Find name: %s\n", FindName);
+  
+  if (FileExists(FindName)) {
+      Found = true;
+  }
+
+  printf("Command was %s\n", Found ? "found" : "not found");
+}

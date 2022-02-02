@@ -10,11 +10,11 @@
 #include "raylib.h"
 
 #define ASSERT(Expression) if (!(Expression)) {* (volatile int *) 0 = 0;}
-#define DEFAULT_USLEEP_PERIOD 500
-#define BUFFER_LEN 128 // Default 128
-#define DEFAULT_LINE_BUFFER_SIZE 4096
-#define MODIFIER_TYPE_COUNT 16
-#define NUM_OF_ALPHANUM_KEYS 64
+#define DEFAULT_USLEEP_PERIOD     500
+#define BUFFER_LEN                128
+#define DEFAULT_LINE_BUFFER_SIZE  4096
+#define MODIFIER_TYPE_COUNT       16
+#define NUM_OF_ALPHANUM_KEYS      64
 
 typedef enum Modifiers {
   SHIFT   =      1,
@@ -54,10 +54,12 @@ typedef struct TextWindow {
 
 typedef struct Buffer {
   i8             Text[BUFFER_LEN];
-  
+
   u32            LeftIndex;
   u32            RightIndex;
 } Buffer;
+
+typedef Buffer CommandBuffer;
 
 typedef struct LineBuffer {
   Buffer       **Lines;
@@ -86,6 +88,7 @@ typedef union Command {
 typedef struct {
   Command CommandMatrix[MODIFIER_TYPE_COUNT][MODIFIER_TYPE_COUNT][NUM_OF_ALPHANUM_KEYS];
 } Commands;
+
 
 #include "Memory.h"
 #include "File.h"
