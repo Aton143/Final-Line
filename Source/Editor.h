@@ -7,6 +7,8 @@
 #include <math.h>
 #include <unistd.h>
 #include <string.h>
+#include <immintrin.h>
+#include <emmintrin.h>
 #include "raylib.h"
 
 #define ASSERT(Expression) if (!(Expression)) {* (volatile int *) 0 = 0;}
@@ -89,7 +91,7 @@ typedef struct {
   Command CommandMatrix[MODIFIER_TYPE_COUNT][MODIFIER_TYPE_COUNT][NUM_OF_ALPHANUM_KEYS];
 } Commands;
 
-
+#include "Utilities.h"
 #include "Memory.h"
 #include "File.h"
 #include "Buffer.h"

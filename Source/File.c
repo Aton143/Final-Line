@@ -139,15 +139,15 @@ void SaveDataIntoFile(LineBuffer *Lines, FileData File) {
   SaveFileData((char *) File.Name, DataToSave.Data, DataToSave.Size);
   free(DataToSave.Data);
 }
-
 // b32 CommandFound(
 
 void FindShellCommand(i8 *CommandName) {
   // want this to be system independent
   i8 *PathEnv = getenv("PATH");
+  printf("String Size: %llu\n", GetStringSize(PathEnv));
   i32 PathEnvIndex = 0;
   b32 Found = false;
-  
+ 
   while (PathEnv[PathEnvIndex]) {
     printf("Index: %d\n", PathEnvIndex);
     i8 CharToEvaluate = PathEnv[PathEnvIndex];
@@ -224,4 +224,9 @@ void FindShellCommand(i8 *CommandName) {
   }
 
   printf("Command was %s\n", Found ? "found" : "not found");
+}
+
+void FindShellCommandSIMD(i8 *CommandName) {
+  i8 *PathEnv = getenv("PATH");
+  return;
 }
