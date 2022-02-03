@@ -9,6 +9,7 @@
 #include <string.h>
 #include <immintrin.h>
 #include <emmintrin.h>
+#include <smmintrin.h>
 #include "raylib.h"
 
 #define ASSERT(Expression) if (!(Expression)) {* (volatile int *) 0 = 0;}

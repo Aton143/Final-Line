@@ -32,7 +32,5 @@ u64 GetStringSize(i8 *String) { // assuming null-terminated
     Add += (TrailingZeroesTop / 8);
   }
   
-  printf("Index: %llu\n", Index);
-  printf("Top: %llu - Bottom: %llu\n", TrailingZeroesTop, TrailingZeroesBottom);
-  return Index + Add;
+   return Index + Add;
 }

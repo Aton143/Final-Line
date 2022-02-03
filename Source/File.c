@@ -226,7 +226,31 @@ void FindShellCommand(i8 *CommandName) {
   printf("Command was %s\n", Found ? "found" : "not found");
 }
 
+/*
 void FindShellCommandSIMD(i8 *CommandName) {
   i8 *PathEnv = getenv("PATH");
+  u64 PathSize = GetStringSize(PathEnv);
+  b32 Found = false;
+  
+  u32 PathIndex = 0;
+  u32 FullPathIndex = 0;
+
+  while (PathIndex < PathSize) {
+    i8 FullPath[128] = {0};
+
+    __m128i LoadedString =_mm_loadu_si128((__m128 *) String[PathIndex]);
+    __m128i ColonMask = _mm_set1_epi8(':');
+    __m128i StringWithMask = _mm_cmpeq_epi8(LoadedString, ColonMask);
+    __m128i Zero = _mm_set1_epi8(0);
+    
+    // while no colon is present
+    while (!_mm_test_all_zeros(StringWithMask, ColonMask) &&
+	   !_mm_test_all_zeros(StringWithMask, ZeroMask)) {
+      
+      PathIndex += 16;
+    }
+  }
+  
   return;
 }
+*/
