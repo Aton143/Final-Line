@@ -17,13 +17,14 @@
 #define BUFFER_LEN                128
 #define DEFAULT_LINE_BUFFER_SIZE  4096
 #define MODIFIER_TYPE_COUNT       16
-#define NUM_OF_ALPHANUM_KEYS      64
+#define NUM_OF_ALPHANUM_KEYS      70
+#define MOD_KEY_NUM               4
 
 typedef enum Modifiers {
   SHIFT   =      1,
   CONTROL =      1 << 1,
   ALT     =      1 << 2,
-  SUPER   =      1 << 3
+  SUPER   =      1 << 3,
 } Modifiers;
 
 typedef enum BufferReturn {
@@ -49,11 +50,15 @@ typedef double   r64;
 
 typedef Vector2  Vec2;
 typedef Vector3  Vec3;
+typedef Vec2     V2f;
+typedef Vec3     V3f;
 
 typedef struct TextWindow {
   u32            Width;
   u32            Height;
 } TextWindow;
+
+typedef TextWindow Window;
 
 typedef struct Buffer {
   i8             Text[BUFFER_LEN];
@@ -83,14 +88,21 @@ typedef struct FileData {
   u32            Size;
 } FileData;
 
-typedef union Command {
-  u32            Output;
-  void         (*Function)(LineBuffer *);
-} Command;
-
 typedef struct {
   Command CommandMatrix[MODIFIER_TYPE_COUNT][MODIFIER_TYPE_COUNT][NUM_OF_ALPHANUM_KEYS];
 } Commands;
+
+typedef struct {
+  LineBuffer   **LineBuffers;
+  LineBuffer    *CurrentLineBuffer;
+  CommandBuffer *CommandBuffer;
+  Window         Window;
+} EditorContext;
+
+typedef union Command {
+  u32            Output;
+  void         (*Function)(EditorContext);
+} Command;
 
 #include "Utilities.h"
 #include "Memory.h"
