@@ -1,23 +1,11 @@
 #include "Input.h"
-Commands InitializeCommands() {
-  Commands ReturnCommands = {0};
-  // A-Z
-  for (u32 Char = KEY_A;
-       Char <= KEY_Z;
-       Char++) {
-    ReturnCommands.CommandMatrix[0][0][Char].Output = Char;
-  }
-
-  return ReturnCommands;
-}
-
 
 i8 GetModifiers() {
   i8 ReturnModifiers = 0;
-  if (IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT)) ReturnModifiers |= SHIFT;
-  if (IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) ReturnModifiers |= CONTROL;
-  if (IsKeyDown(KEY_LEFT_ALT) || IsKeyDown(KEY_RIGHT_ALT)) ReturnModifiers |= ALT;
-  if (IsKeyDown(KEY_LEFT_SUPER) || IsKeyDown(KEY_RIGHT_SUPER)) ReturnModifiers |= SUPER;
+  if (IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT)) ReturnModifiers |= SHIFT_MOD;
+  if (IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) ReturnModifiers |= CONTROL_MOD;
+  if (IsKeyDown(KEY_LEFT_ALT) || IsKeyDown(KEY_RIGHT_ALT)) ReturnModifiers |= ALT_MOD;
+  if (IsKeyDown(KEY_LEFT_SUPER) || IsKeyDown(KEY_RIGHT_SUPER)) ReturnModifiers |= SUPER_MOD;
 
   return ReturnModifiers;
 }
@@ -83,11 +71,8 @@ void ProcessInput(EditorContext Context) {
 */
 
 MacroTable CreateMacroTable() {
-  MacroList *MacroList = (MacroList *) calloc(COMBO_NUM, sizeof(MacroList *));
-  
   //------------------------------------------------------------------
   MacroList UnmodifiedKeys;
-  UnmodifiedKeys.MacroCombination = NONE;
   // UKM: unmodified key macros
   Macro *UKM = (Macro *) calloc(NUM_OF_ALPHANUM_KEYS, sizeof(Macro *));
   UKM[0] = (Macro) {KEY_SPACE, Output, ' '};
@@ -161,6 +146,7 @@ MacroTable CreateMacroTable() {
 
   UnmodifiedKeys.Macros = UKM;
   UnmodifiedKeys.LastIndex = 67;
+  UnmodifiedKeys.Size = NUM_OF_ALPHANUM_KEYS;
   //******************************************************************
   
   //------------------------------------------------------------------
@@ -216,64 +202,122 @@ MacroTable CreateMacroTable() {
 
   ShiftKeys.Macros = SKM;
   ShiftKeys.LastIndex = 47;
+  ShiftKeys.Size = NUM_OF_ALPHANUM_KEYS;
   //******************************************************************
 
   //------------------------------------------------------------------
   MacroList ControlKeys;
   ControlKeys.Macros = NULL;
   ControlKeys.LastIndex = 0;
+  ControlKeys.Size = 0;
   //******************************************************************
 
   //------------------------------------------------------------------
   MacroList AltKeys;
   AltKeys.Macros = NULL;
   AltKeys.LastIndex = 0;
+  AltKeys.Size = 0;
   //******************************************************************
 
   //------------------------------------------------------------------
   MacroList SuperKeys;
   SuperKeys.Macros = NULL;
   SuperKeys.LastIndex = 0;
+  SuperKeys.Size = 0;
   //******************************************************************
 
   //------------------------------------------------------------------
   MacroList ShiftControlKeys;
   ShiftControlKeys.Macros = NULL;
   ShiftControlKeys.LastIndex = 0;
+  ShiftControlKeys.Size = 0;
   //******************************************************************
 
   //------------------------------------------------------------------
   MacroList ShiftAltKeys;
   ShiftAltKeys.Macros = NULL;
   ShiftAltKeys.LastIndex = 0;
+  ShiftAltKeys.Size = 0;
   //******************************************************************
 
   //------------------------------------------------------------------
   MacroList ShiftSuperKeys;
   ShiftSuperKeys.Macros = NULL;
   ShiftSuperKeys.LastIndex = 0;
+  ShiftSuperKeys.Size = 0;
   //******************************************************************
 
   //------------------------------------------------------------------
   MacroList ControlAltKeys;
   ControlAltKeys.Macros = NULL;
   ControlAltKeys.LastIndex = 0;
+  ControlAltKeys.Size = 0;
   //******************************************************************
 
   //------------------------------------------------------------------
   MacroList ControlSuperKeys;
   ControlSuperKeys.Macros = NULL;
   ControlSuperKeys.LastIndex = 0;
+  ControlSuperKeys.Size = 0;
   //******************************************************************
 
   //------------------------------------------------------------------
   MacroList AltSuperKeys;
   AltSuperKeys.Macros = NULL;
   AltSuperKeys.LastIndex = 0;
+  AltSuperKeys.Size = 0;
   //******************************************************************
   
-  MacroTable This;
-  return This;
+  MacroTable ResultTable = {};
+  ResultTable.List[NONE] = UnmodifiedKeys;
+  ResultTable.List[SHIFT] = ShiftKeys;
+  ResultTable.List[CONTROL] = ControlKeys;
+  ResultTable.List[ALT] = AltKeys;
+  ResultTable.List[SUPER] = SuperKeys;
+  ResultTable.List[SHIFT_CONTROL] = ShiftControlKeys;
+  ResultTable.List[SHIFT_ALT] = ShiftAltKeys;
+  ResultTable.List[SHIFT_SUPER] = ShiftSuperKeys;
+  ResultTable.List[CONTROL_ALT] = ControlAltKeys;
+  ResultTable.List[CONTROL_SUPER] = ControlSuperKeys;
+  ResultTable.List[ALT_SUPER] = AltSuperKeys;
+  
+  return ResultTable;
+}
+
+i32 MacroSearch(MacroTable Table, KeyboardKey Key, MacroCombo Combo) {
+  u32 LastIndex = Table.List[Combo].LastIndex;
+  for (u32 MacroIndex = 0; MacroIndex < LastIndex; MacroIndex++) {
+    Macro CurrentMacro = Table.List[Combo].Macros[MacroIndex];
+    if (CurrentMacro.Key == Key) {
+      return MacroIndex;
+    }
+  }
+  return -1;
+}
+
+void RegisterMacro(MacroCombo Combo, KeyboardKey Key,
+		   MacroType Type, Command Command, MacroTable Table) {
+  i32 PossibleMacroIndex = MacroSearch(Table, Key, Combo);
+
+  if (PossibleMacroIndex != -1) {
+    Table.List[Combo].Macros[PossibleMacroIndex] = (Macro) {Key, Type, Command};
+  } else if (Table.List[Combo].Size == 0) {
+      Macro *List = (Macro *) calloc(STARTING_MACRO_SIZE, sizeof(Macro));
+      List[0] = (Macro) {Key, Type, Command};
+      Table.List[Combo].Size = STARTING_MACRO_SIZE;
+      Table.List[Combo].Macros = List;
+      Table.List[Combo].LastIndex = 1;
+  } else {
+    u32 LastIndex = Table.List[Combo].LastIndex;
+    
+    if (Table.List[Combo].Size <= LastIndex) {
+      u32 NewSize = Table.List[Combo].Size * 2;
+      Macro *NewList = (Macro *) realloc(Table.List[Combo].Macros, NewSize);
+      Table.List[Combo].Macros = NewList;
+      Table.List[Combo].Size = NewSize;
+    }
+    Table.List[Combo].Macros[LastIndex] = (Macro) {Key, Type, Command};
+  }
 }
 
 void ProcessInput(){

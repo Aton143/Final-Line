@@ -21,10 +21,10 @@
 #define MOD_KEY_NUM               4
 
 typedef enum Modifiers {
-  SHIFT   =      1,
-  CONTROL =      1 << 1,
-  ALT     =      1 << 2,
-  SUPER   =      1 << 3,
+  SHIFT_MOD   =      1,
+  CONTROL_MOD =      1 << 1,
+  ALT_MOD     =      1 << 2,
+  SUPER_MOD   =      1 << 3,
 } Modifiers;
 
 typedef enum BufferReturn {
@@ -87,10 +87,6 @@ typedef struct FileData {
   u8            *Name;
   u32            Size;
 } FileData;
-
-typedef struct {
-  Command CommandMatrix[MODIFIER_TYPE_COUNT][MODIFIER_TYPE_COUNT][NUM_OF_ALPHANUM_KEYS];
-} Commands;
 
 typedef struct {
   LineBuffer   **LineBuffers;

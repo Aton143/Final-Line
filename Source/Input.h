@@ -3,8 +3,9 @@
 #include "Editor.h"
 
 #define COMBO_NUM (1 + MOD_KEY_NUM + ((MOD_KEY_NUM * (MOD_KEY_NUM - 1)) / 2))
+#define STARTING_MACRO_SIZE 16
 
-tyepdef enum {
+typedef enum {
   NONE,
   SHIFT,
   CONTROL,
@@ -25,19 +26,19 @@ typedef enum {
 } MacroType;
 
 typedef struct {
-  u32        Key;
-  MacroType  Type;
-  Command    Output;
+  KeyboardKey Key;
+  MacroType   Type;
+  Command     Output;
 } Macro;
 
 typedef struct {
-  MacroCombo MacroCombination;
-  Macro     *Macros;
-  u32        LastIndex;
+  Macro      *Macros;
+  u32         Size;
+  u32         LastIndex;
 } MacroList;
 
 typedef struct {
-  MacroList *MacroList;
+  MacroList   List[11];
 } MacroTable;
 
 #endif
