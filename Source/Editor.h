@@ -85,6 +85,12 @@ typedef struct Buffer {
 
 typedef Buffer CommandBuffer;
 
+typedef struct FileData {
+  u8            *Data;
+  u8            *Name;
+  u32            Size;
+} FileData;
+
 typedef struct LineBuffer {
   Buffer       **Lines;
   u32            Size;       // in bytes
@@ -96,19 +102,17 @@ typedef struct LineBuffer {
   Font           Font;
   r32            FontWidth;
   r32            FontHeight;
+  
+  FileData      *File;
 } LineBuffer;
-
-typedef struct FileData {
-  u8            *Data;
-  u8            *Name;
-  u32            Size;
-} FileData;
 
 typedef struct {
   LineBuffer   **LineBuffers;
   LineBuffer    *CurrentLineBuffer;
   CommandBuffer *CommandBuffer;
   Window         Window;
+
+  KeyboardKey    LastKey;
 } EditorContext;
 
 typedef void (*InputFunction)(EditorContext, void *);

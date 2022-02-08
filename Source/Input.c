@@ -17,8 +17,8 @@ MacroTable CreateMacroTable() {
   Macro *UKM = (Macro *) calloc(NUM_OF_ALPHANUM_KEYS, sizeof(Macro));
   UKM[0] = (Macro) {KEY_SPACE, InsertInput, (void *) ' '};
   UKM[1] = (Macro) {KEY_ENTER, InsertLineInput, NULL};      // insert function
-  UKM[2] = (Macro) {KEY_TAB, NULL, NULL};                   // tab function
-  UKM[3] = (Macro) {KEY_DELETE, BackspaceInput, NULL};      // backspace function
+  UKM[2] = (Macro) {KEY_TAB, SaveDataInput, NULL};                   // tab function
+  UKM[3] = (Macro) {KEY_BACKSPACE, BackspaceInput, NULL};      // backspace function
   UKM[4] = (Macro) {KEY_RIGHT, MoveCursorInput, (void *) KEY_RIGHT}; // right
   UKM[5] = (Macro) {KEY_LEFT, MoveCursorInput, (void *) KEY_LEFT};   // left
   UKM[6] = (Macro) {KEY_UP, MoveCursorInput, (void *) KEY_UP};       // up
@@ -343,23 +343,40 @@ MacroCombo GetMacroCombo() {
   }
 }
 
-void ProcessInput(EditorContext Context, MacroTable Table) {
-  u32 Input = 0;
+void RunCommand(EditorContext Context, MacroTable Table,
+		KeyboardKey Input, MacroCombo Combo) {
+  i32 MacroIndex = MacroSearch(Table, Input, Combo);
+  if (MacroIndex > -1) {
+    Macro CommandMacro = Table.List[Combo].Macros[MacroIndex];
+    if (CommandMacro.Function) {
+      CommandMacro.Function(Context, CommandMacro.Parameter);
+    }
+  }
+}
+
+void ProcessInput(EditorContext *Context, MacroTable Table) {
+  KeyboardKey Input = 0;
+  KeyboardKey LastInput = 0;
   MacroCombo Combo = GetMacroCombo();
 
-  Input = GetKeyPressed();
-  printf("Input: %d - Combo: %d\n", Input, Combo);
-
+  b32 LastKeyDownCheck = IsKeyDown(Context->LastKey);
+  printf("Last Key: %c (Check: %s)\n", Context->LastKey, LastKeyDownCheck ? "Same as last" : "Not the same");
+  Input = LastKeyDownCheck ? Context->LastKey : GetKeyPressed();
+  
+  //printf("Input: %d - Combo: %d\n", Input, Combo);
+  
   while (Input) {
-    i32 MacroIndex = MacroSearch(Table, Input, Combo);
-    printf("Macro Index: %d\n", MacroIndex);
-    if (MacroIndex > -1) {
-      Macro CommandMacro = Table.List[Combo].Macros[MacroIndex];
-      if (CommandMacro.Function) {
-	CommandMacro.Function(Context, CommandMacro.Parameter);
-      }
-    }
-
+    RunCommand(*Context, Table, Input, Combo);
+    
+    LastInput = Input;
     Input = GetKeyPressed();
   }
+
+  printf("Last Input: %c\n", LastInput);
+  
+  if (!LastKeyDownCheck) {
+    Context->LastKey = LastInput;
+  }
+
+  printf("Context Last Key: %c\n", Context->LastKey);
 }

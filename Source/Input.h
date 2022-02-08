@@ -3,5 +3,5 @@
 #include "Editor.h"
 
 MacroTable CreateMacroTable();
-void ProcessInput(EditorContext Context, MacroTable Table);
+void ProcessInput(EditorContext *Context, MacroTable Table);
 #endif

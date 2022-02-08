@@ -28,6 +28,7 @@ i32 main(i32 ArgCount, i8 **Args) {
   Sound PunchSound = LoadSoundFromWave(Punch);
   
   FileData File = LoadFileIntoLineBuffer(Lines, (u8 *) "/Users/antoniomartinez/Desktop/Project/TextEditor/Source/ex");
+  Lines->File = &File;
   PrintLines(Lines);
 
   FindShellCommand("build.sh");
@@ -69,7 +70,7 @@ i32 main(i32 ArgCount, i8 **Args) {
 
 
     // printf("Line Index: %d -- LineLeftIndex: %d -- LineRightIndex: %d\n", Lines->LineIndex, Lines->LeftIndex, Lines->RightIndex);
-    ProcessInput(Context, Macros);
+    ProcessInput(&Context, Macros);
     
     if ((InputChar == KEY_RIGHT) || (InputChar == KEY_LEFT)) {
       MoveCursor(Lines, InputChar);

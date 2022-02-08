@@ -139,7 +139,12 @@ void SaveDataIntoFile(LineBuffer *Lines, FileData File) {
   SaveFileData((char *) File.Name, DataToSave.Data, DataToSave.Size);
   free(DataToSave.Data);
 }
-// b32 CommandFound(
+
+void SaveDataInput(EditorContext Context, void *Parameter) {
+  LineBuffer *Lines = Context.CurrentLineBuffer;
+  FileData File = *Lines->File;
+  SaveDataIntoFile(Lines, File);
+}
 
 void FindShellCommand(i8 *CommandName) {
   // want this to be system independent

@@ -11,4 +11,5 @@ FileData OpenFileToMemory(u8 *FileName);
 void SaveDataIntoFile(LineBuffer *Lines, FileData File);
 void FindShellCommand(i8 *CommandName);
 
+void SaveDataInput(EditorContext Context, void *Parameter);
 #endif
