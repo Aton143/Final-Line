@@ -47,12 +47,6 @@ typedef enum {
   ALT_SUPER
 } MacroCombo;
 
-typedef enum {
-  NoOp,
-  Output,
-  Function
-} MacroType;
-
 typedef char     i8;
 typedef int16_t  i16;
 typedef int32_t  i32;
@@ -117,15 +111,12 @@ typedef struct {
   Window         Window;
 } EditorContext;
 
-typedef union Command {
-  u32            Output;
-  void         (*Function)(EditorContext);
-} Command;
+typedef void (*InputFunction)(EditorContext, void *);
 
 typedef struct {
   KeyboardKey    Key;
-  MacroType      Type;
-  Command        Output;
+  InputFunction  Function;
+  void          *Parameter;
 } Macro;
 
 typedef struct {

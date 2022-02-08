@@ -17,4 +17,8 @@ void PrintLines(LineBuffer *Lines);
 FileData LoadFileIntoLineBuffer(LineBuffer *Lines, u8 *FileName);
 u32 NumberCharacters(Buffer *Buffer);
 
+void MoveCursorInput(EditorContext Context, void *Direction);
+void InsertInput(EditorContext Context, void *Parameter);
+void InsertLineInput(EditorContext Context, void *Parameter);
+void BackspaceInput(EditorContext Context, void *Parameter);
 #endif

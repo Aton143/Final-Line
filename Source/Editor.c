@@ -126,9 +126,6 @@ i32 main(i32 ArgCount, i8 **Args) {
     snprintf(TextBufferInformation, 100, "Right Index: %d", TextBuffer->RightIndex);
     DrawText(TextBufferInformation, 190, 300, 20, BLACK);
     
-    
-    //GetInput();
-    
     EndDrawing();
   }
 

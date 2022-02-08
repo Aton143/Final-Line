@@ -18,6 +18,8 @@ void BackspaceInBuffer(Buffer *Buffer) {
 }
 
 void Insert(Buffer *Buffer, i8 CharToAdd) {
+  printf("Inserting char: %c\n", CharToAdd);
+  
   i32 LeftIndex = Buffer->LeftIndex;
   i32 RightIndex = Buffer->RightIndex;
   
@@ -27,6 +29,13 @@ void Insert(Buffer *Buffer, i8 CharToAdd) {
     LeftIndex++;
     Buffer->LeftIndex = LeftIndex;
   }
+}
+
+void InsertInput(EditorContext Context, void *Parameter) {
+  i8 CharToAdd = (i8) Parameter;
+  LineBuffer *Lines = Context.CurrentLineBuffer;
+  Buffer *CurrentBuffer = Lines->Lines[Lines->LineIndex];
+  Insert(CurrentBuffer, CharToAdd);
 }
 
 void MoveCursorLR(Buffer *Buffer, i32 Delta) {
@@ -179,6 +188,12 @@ void MoveCursorToMouse(LineBuffer *Lines) {
   }
 }
 
+void MoveCursorInput(EditorContext Context, void *Direction) {
+  i32 CursorDirection = (i32) Direction;
+  MoveCursor(Context.CurrentLineBuffer, CursorDirection);
+}
+							      
+
 i8 *PrintBuffer(Buffer *TextBuffer) {
   i8 *ToPrint = calloc(BUFFER_LEN, sizeof(i8));
   i32 WriteIndex = 0;
@@ -207,6 +222,12 @@ void InsertLine(LineBuffer *Lines, Buffer *BufferToAdd) {
     Lines->LeftIndex = LeftIndex;
     Lines->LineIndex = LineIndex;
   }
+}
+
+void InsertLineInput(EditorContext Context, void *Parameter) {
+  Buffer *NewBuffer = CreateBuffer();
+  LineBuffer *Lines = Context.CurrentLineBuffer;
+  InsertLine(Lines, NewBuffer);
 }
 
 void RemoveLine(LineBuffer *Lines) {
@@ -281,6 +302,11 @@ void Backspace(LineBuffer *Lines) {
   } else { // delete buffer and update LineIndex
     return;
   }
+}
+
+void BackspaceInput(EditorContext Context, void *Parameter) {
+  LineBuffer *Lines = Context.CurrentLineBuffer;
+  Backspace(Lines);
 }
 
 b32 IsNewLine(u8 CheckChar) {
