@@ -10,66 +10,6 @@ i8 GetModifiers() {
   return ReturnModifiers;
 }
 
-u32 ProcessNumberWithShift(u32 Number) {
-  switch(Number) {
-  case '1':
-    return '!';
-  case '2':
-    return '@';
-  case '3':
-    return '#';
-  case '4':
-    return '$';
-  case '5':
-    return '%';
-  case '6':
-    return '^';
-  case '7':
-    return '&';
-  case '8':
-    return '*';
-  case '9':
-    return '(';
-  case '0':
-    return ')';
-  default:
-    return '\0';
-  }
-}
-
-/*
-void ProcessInput(EditorContext Context) {
-  i32 InputChar = 0;
-  i8 Modifiers = GetModifiers();
-
-  u32 LineIndex = Lines->LineIndex;
-  Buffer *Buffer = Lines->Lines[LineIndex];
-
-  InputChar = GetCharPressed();
-  
-  while (InputChar) {
-    if ((InputChar >= KEY_A) && (InputChar <= KEY_Z)) { 
-      if (Modifiers == SHIFT) {
-	Insert(Buffer, InputChar); 
-      } else if (!Modifiers) {
-	u32 LowercaseDelta = 'A' - 'a';
-	Insert(Buffer, InputChar + LowercaseDelta);
-      }
-    } else if ((InputChar >= KEY_ZERO) && (InputChar <= KEY_NINE)) {
-      if (Modifiers == SHIFT) {
-	u32 ShiftNumber = ProcessNumberWithShift(InputChar);
-	Insert(Buffer, ShiftNumber);
-      } else if (!Modifiers) {
-	Insert(Buffer, InputChar);
-      }
-    }
-    
-    
-    InputChar = GetCharPressed();
-  }
-}
-*/
-
 MacroTable CreateMacroTable() {
   //------------------------------------------------------------------
   MacroList UnmodifiedKeys;
@@ -284,7 +224,7 @@ MacroTable CreateMacroTable() {
   return ResultTable;
 }
 
-i32 MacroSearch(MacroTable Table, KeyboardKey Key, MacroCombo Combo) {
+u32 MacroSearch(MacroTable Table, KeyboardKey Key, MacroCombo Combo) {
   u32 LastIndex = Table.List[Combo].LastIndex;
   for (u32 MacroIndex = 0; MacroIndex < LastIndex; MacroIndex++) {
     Macro CurrentMacro = Table.List[Combo].Macros[MacroIndex];
@@ -316,10 +256,115 @@ void RegisterMacro(MacroCombo Combo, KeyboardKey Key,
       Table.List[Combo].Macros = NewList;
       Table.List[Combo].Size = NewSize;
     }
+    
     Table.List[Combo].Macros[LastIndex] = (Macro) {Key, Type, Command};
   }
 }
 
-void ProcessInput(){
-  return;
-};
+
+/*
+void ProcessInput(EditorContext Context) {
+  i32 InputChar = 0;
+  i8 Modifiers = GetModifiers();
+
+  u32 LineIndex = Lines->LineIndex;
+  Buffer *Buffer = Lines->Lines[LineIndex];
+
+  InputChar = GetCharPressed();
+  
+  while (InputChar) {
+    if ((InputChar >= KEY_A) && (InputChar <= KEY_Z)) { 
+      if (Modifiers == SHIFT) {
+	Insert(Buffer, InputChar); 
+      } else if (!Modifiers) {
+	u32 LowercaseDelta = 'A' - 'a';
+	Insert(Buffer, InputChar + LowercaseDelta);
+      }
+    } else if ((InputChar >= KEY_ZERO) && (InputChar <= KEY_NINE)) {
+      if (Modifiers == SHIFT) {
+	u32 ShiftNumber = ProcessNumberWithShift(InputChar);
+	Insert(Buffer, ShiftNumber);
+      } else if (!Modifiers) {
+	Insert(Buffer, InputChar);
+      }
+    }
+    
+    
+    InputChar = GetCharPressed();
+  }
+}
+*/
+
+MacroCombo GetMacroCombo() {
+  i8 Modifiers = GetModifiers();
+  i32 BitsSet = __builtin_popcount((u32) Modifiers);
+  if (BitsSet > 2) {
+    return NONE;
+  }
+
+  i8 ShiftMod = Modifiers & SHIFT_MOD;
+  i8 ControlMod = Modifiers & CONTROL_MOD;
+  i8 AltMod = Modifiers & ALT_MOD;
+  i8 SuperMod = Modifiers & SUPER_MOD;
+  
+  if (ShiftMod) {
+    if (ControlMod) {
+      return SHIFT_CONTROL;
+    } else if (AltMod) {
+      return SHIFT_ALT;
+    } else if (SuperMod) {
+      return SHIFT_SUPER;
+    } else {
+      return SHIFT;
+    }
+  } else if (ControlMod) {
+    if (AltMod) {
+      return CONTROL_ALT;
+    } else if (SuperMod) {
+      return CONTROL_SUPER;
+    } else {
+      return CONTROL;
+    }
+  } else if (AltMod) {
+    if (SuperMod) {
+      return ALT_SUPER;
+    } else {
+      return ALT;
+    }
+  } else if (SuperMod) {
+    return SUPER;
+  } else {
+    return NONE;
+  }
+}
+
+void ProcessInput(EditorContext Context, MacroTable Table) {
+  u32 Input = 0;
+  MacroCombo Combo = GetMacroCombo();
+
+  Input = GetKeyPressed();
+  printf("Input: %d - Combo: %d\n", Input, Combo);
+
+  if (Input) {
+    u32 MacroIndex = MacroSearch(Table, Input, Combo);
+    printf("Macro Index: %d\n", MacroIndex);
+    if (MacroIndex > -1) {
+      Macro CommandMacro = Table.List[Combo].Macros[MacroIndex];
+      switch(CommandMacro.Type) {
+      case Output: {
+	LineBuffer *Lines = Context.CurrentLineBuffer;
+	Buffer *Buffer = Lines->Lines[Lines->LineIndex];
+
+	Insert(Buffer, Input);
+	break;
+      }
+      case Function: {
+	break;
+      }
+      default:
+	break;
+      }
+    
+    }
+  }
+}

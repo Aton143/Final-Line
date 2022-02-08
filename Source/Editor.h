@@ -19,6 +19,8 @@
 #define MODIFIER_TYPE_COUNT       16
 #define NUM_OF_ALPHANUM_KEYS      70
 #define MOD_KEY_NUM               4
+#define COMBO_NUM                 (1 + MOD_KEY_NUM + ((MOD_KEY_NUM * (MOD_KEY_NUM - 1)) / 2))
+#define STARTING_MACRO_SIZE       16
 
 typedef enum Modifiers {
   SHIFT_MOD   =      1,
@@ -30,6 +32,26 @@ typedef enum Modifiers {
 typedef enum BufferReturn {
   TOO_MANY_LINES,
 } BufferError;
+
+typedef enum {
+  NONE,
+  SHIFT,
+  CONTROL,
+  ALT,
+  SUPER,
+  SHIFT_CONTROL,
+  SHIFT_ALT,
+  SHIFT_SUPER,
+  CONTROL_ALT,
+  CONTROL_SUPER,
+  ALT_SUPER
+} MacroCombo;
+
+typedef enum {
+  NoOp,
+  Output,
+  Function
+} MacroType;
 
 typedef char     i8;
 typedef int16_t  i16;
@@ -100,9 +122,26 @@ typedef union Command {
   void         (*Function)(EditorContext);
 } Command;
 
+typedef struct {
+  KeyboardKey    Key;
+  MacroType      Type;
+  Command        Output;
+} Macro;
+
+typedef struct {
+  Macro         *Macros;
+  u32            Size;
+  u32            LastIndex;
+} MacroList;
+
+typedef struct {
+  MacroList      List[11];
+} MacroTable;
+
 #include "Utilities.h"
 #include "Memory.h"
 #include "File.h"
 #include "Buffer.h"
 #include "Render.h"
+#include "Input.h"
 #endif /* EDITOR_HEADER */

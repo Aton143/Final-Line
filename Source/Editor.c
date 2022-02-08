@@ -33,16 +33,25 @@ i32 main(i32 ArgCount, i8 **Args) {
   FindShellCommand("build.sh");
 
   CommandBuffer *Command = (CommandBuffer *) CreateBuffer();
+  MacroTable Macros = CreateMacroTable();
+  EditorContext Context = {0};
+  LineBuffer *List[1];
+  List[0] = Lines;
+  Context.LineBuffers = List;
+  Context.CurrentLineBuffer = Lines;
+  Context.CommandBuffer = Command;
+  Context.Window = Window;
   
   while (!WindowShouldClose()) {
     BeginDrawing();
     ClearBackground(RAYWHITE);
 
-    InputChar = GetKeyPressed();
+    // InputChar = GetKeyPressed();
     // printf("%d\n", InputChar);
     
     Buffer *TextBuffer = Lines->Lines[Lines->LineIndex];
-    
+
+    /*
     if ((InputChar >= 39 && InputChar <= 96) || (InputChar == KEY_SPACE)) {
       if (!IsKeyDown(KEY_LEFT_SHIFT) && !IsKeyDown(KEY_RIGHT_SHIFT))
 	Insert(TextBuffer, InputChar);
@@ -56,9 +65,12 @@ i32 main(i32 ArgCount, i8 **Args) {
     if (InputChar == KEY_BACKSPACE) {
       Backspace(Lines);
     }
+    */
 
 
     // printf("Line Index: %d -- LineLeftIndex: %d -- LineRightIndex: %d\n", Lines->LineIndex, Lines->LeftIndex, Lines->RightIndex);
+    ProcessInput(Context, Macros);
+    
     if ((InputChar == KEY_RIGHT) || (InputChar == KEY_LEFT)) {
       MoveCursor(Lines, InputChar);
     }
@@ -71,6 +83,7 @@ i32 main(i32 ArgCount, i8 **Args) {
       MoveCursor(Lines, InputChar);
     }
 
+    /*
     if (InputChar == KEY_TAB) {
       SaveDataIntoFile(Lines, File);
     }
@@ -79,6 +92,7 @@ i32 main(i32 ArgCount, i8 **Args) {
       Buffer *NewBuffer = CreateBuffer();
       InsertLine(Lines, NewBuffer);
     }
+    */
 
     if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
       printf("(%d,%d)\n", GetMouseX(), GetMouseY());
