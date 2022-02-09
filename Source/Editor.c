@@ -9,7 +9,7 @@ i32 main(i32 ArgCount, i8 **Args) {
   Window.Height = ScreenHeight;
 
   InitWindow(ScreenWidth, ScreenHeight, "raylib [core] example - basic window");
-  SetTargetFPS(60);
+  SetTargetFPS(TARGET_FPS);
 
   i32 InputChar = 0;
 

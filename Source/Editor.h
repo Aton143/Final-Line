@@ -21,6 +21,9 @@
 #define MOD_KEY_NUM               4
 #define COMBO_NUM                 (1 + MOD_KEY_NUM + ((MOD_KEY_NUM * (MOD_KEY_NUM - 1)) / 2))
 #define STARTING_MACRO_SIZE       16
+#define TARGET_FPS                60
+#define REPEAT_DELAY              TARGET_FPS / 10
+#define FIRST_DELAY               TARGET_FPS / 2
 
 typedef enum Modifiers {
   SHIFT_MOD   =      1,
@@ -113,6 +116,8 @@ typedef struct {
   Window         Window;
 
   KeyboardKey    LastKey;
+  b32            FirstDelay;
+  u32            KeyCounter;
 } EditorContext;
 
 typedef void (*InputFunction)(EditorContext, void *);

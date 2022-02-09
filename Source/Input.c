@@ -360,10 +360,22 @@ void ProcessInput(EditorContext *Context, MacroTable Table) {
   MacroCombo Combo = GetMacroCombo();
 
   b32 LastKeyDownCheck = IsKeyDown(Context->LastKey);
-  printf("Last Key: %c (Check: %s)\n", Context->LastKey, LastKeyDownCheck ? "Same as last" : "Not the same");
-  Input = LastKeyDownCheck ? Context->LastKey : GetKeyPressed();
-  
-  //printf("Input: %d - Combo: %d\n", Input, Combo);
+  // printf("Last Key: %c (Check: %s)\n", Context->LastKey, LastKeyDownCheck ? "Same as last" : "Not the same");
+
+  if (LastKeyDownCheck) {
+    Context->KeyCounter++;
+    if (!Context->FirstDelay && Context->KeyCounter >= FIRST_DELAY) {
+      Input = Context->LastKey;
+      Context->FirstDelay = true;
+      Context->KeyCounter = 0;
+    } else if (Context->FirstDelay && Context->KeyCounter >= REPEAT_DELAY) {
+      Input = Context->LastKey;
+      RunCommand(*Context, Table, Input, Combo);
+      Context->KeyCounter = 0;
+    }
+  }
+
+  Input = GetKeyPressed();
   
   while (Input) {
     RunCommand(*Context, Table, Input, Combo);
@@ -372,11 +384,13 @@ void ProcessInput(EditorContext *Context, MacroTable Table) {
     Input = GetKeyPressed();
   }
 
-  printf("Last Input: %c\n", LastInput);
+  // printf("Last Input: %c\n", LastInput);
   
   if (!LastKeyDownCheck) {
     Context->LastKey = LastInput;
+    Context->KeyCounter = 0;
+    Context->FirstDelay = false;
   }
 
-  printf("Context Last Key: %c\n", Context->LastKey);
+  // printf("Context Last Key: %c\n", Context->LastKey);
 }
